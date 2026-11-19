@@ -1,0 +1,10 @@
+ï»¿data/raw/
+data/processed/
+outputs/models/
+private_notes/
+.venv/
+__pycache__/
+.ipynb_checkpoints/
+*.pyc
+.env
+notebooks/
