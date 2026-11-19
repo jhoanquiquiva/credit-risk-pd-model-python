@@ -1,0 +1,9 @@
+metric,value
+total_rows,30000.0
+total_columns,19.0
+distinct_clients,30000.0
+duplicate_clients,0.0
+missing_values,0.0
+observed_defaults,6636.0
+observed_default_rate,0.2212
+utilization_cap_train_p99,1.0441270666666667

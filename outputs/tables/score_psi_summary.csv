@@ -1,0 +1,2 @@
+comparison,psi_total,interpretation,limitation
+train_vs_test,0.0011337256863867965,small_population_shift,Random split; this is not an out-of-time stability test.

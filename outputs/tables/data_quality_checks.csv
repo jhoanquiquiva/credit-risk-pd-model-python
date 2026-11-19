@@ -1,0 +1,8 @@
+check,affected_rows
+Invalid target values,0
+Invalid sex codes,0
+Undocumented education codes,345
+Undocumented marital-status codes,54
+Non-positive credit limits,0
+Implausible ages,0
+Negative payment amounts,0

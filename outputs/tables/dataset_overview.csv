@@ -1,0 +1,9 @@
+metric,value
+total_rows,30000.0
+total_columns,25.0
+complete_duplicate_rows,0.0
+duplicated_id_rows,0.0
+total_missing_values,0.0
+non_default_count,23364.0
+default_count,6636.0
+observed_default_rate,0.2212

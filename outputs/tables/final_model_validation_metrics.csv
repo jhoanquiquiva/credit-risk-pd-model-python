@@ -1,0 +1,11 @@
+metric,value
+training_clients,18000.0
+validation_clients,6000.0
+original_feature_count,12.0
+validation_auc,0.7563479760189812
+validation_gini,0.5126959520379624
+observed_default_rate,0.22116666666666668
+average_predicted_pd,0.21841449013384923
+observed_to_expected_ratio,1.0126007048851515
+validation_brier_score,0.13889089997682177
+brier_skill_score,0.19367601022887349
