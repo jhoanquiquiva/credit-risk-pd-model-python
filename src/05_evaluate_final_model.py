@@ -11,65 +11,22 @@ from sklearn.metrics import (
 )
 
 
-# =========================================================
-# 1. RUTAS DEL PROYECTO
-# =========================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-TRAIN_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "train_data.csv"
-)
+TRAIN_PATH = PROJECT_ROOT / "data" / "processed" / "train_data.csv"
 
-TEST_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "test_data.csv"
-)
+TEST_PATH = PROJECT_ROOT / "data" / "processed" / "test_data.csv"
 
-PIPELINE_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "models"
-    / "final_pd_pipeline.joblib"
-)
+PIPELINE_PATH = PROJECT_ROOT / "outputs" / "models" / "final_pd_pipeline.joblib"
 
-TEST_METRICS_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "final_test_metrics.csv"
-)
+TEST_METRICS_PATH = PROJECT_ROOT / "outputs" / "tables" / "final_test_metrics.csv"
 
-TEST_DECILES_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "final_test_decile_summary.csv"
-)
+TEST_DECILES_PATH = PROJECT_ROOT / "outputs" / "tables" / "final_test_decile_summary.csv"
 
-PSI_BANDS_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "score_psi_by_band.csv"
-)
+PSI_BANDS_PATH = PROJECT_ROOT / "outputs" / "tables" / "score_psi_by_band.csv"
 
-PSI_SUMMARY_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "score_psi_summary.csv"
-)
+PSI_SUMMARY_PATH = PROJECT_ROOT / "outputs" / "tables" / "score_psi_summary.csv"
 
-
-# =========================================================
-# 2. VARIABLES DEL MODELO FINAL
-# =========================================================
 
 FINAL_FEATURES = [
     "sex",
@@ -86,10 +43,6 @@ FINAL_FEATURES = [
     "months_no_payment_with_positive_bill",
 ]
 
-
-# =========================================================
-# 3. FUNCIÓN PARA CALCULAR KS
-# =========================================================
 
 def calculate_ks(
     y_true: pd.Series,
@@ -120,10 +73,6 @@ def calculate_ks(
         "fpr": float(false_positive_rate[max_position]),
     }
 
-
-# =========================================================
-# 4. FUNCIÓN PRINCIPAL
-# =========================================================
 
 def main() -> None:
     """Evaluate the final saved PD pipeline."""
@@ -163,10 +112,6 @@ def main() -> None:
         "default"
     ].copy()
 
-    # -----------------------------------------------------
-    # 5. PROBABILIDADES ESTIMADAS
-    # -----------------------------------------------------
-
     train_pd = final_pipeline.predict_proba(
         X_train
     )[:, 1]
@@ -174,10 +119,6 @@ def main() -> None:
     test_pd = final_pipeline.predict_proba(
         X_test
     )[:, 1]
-
-    # -----------------------------------------------------
-    # 6. MÉTRICAS FINALES DE PRUEBA
-    # -----------------------------------------------------
 
     test_auc = roc_auc_score(
         y_test,
@@ -264,10 +205,7 @@ def main() -> None:
         }
     )
 
-    # -----------------------------------------------------
-    # 7. DECILES DE RIESGO EN PRUEBA
-    # -----------------------------------------------------
-
+    # Ordenar por probabilidad estimada para comparar lo observado dentro de cada decil.
     test_predictions = pd.DataFrame(
         {
             "observed_default": y_test.to_numpy(),
@@ -330,10 +268,7 @@ def main() -> None:
         * 100
     )
 
-    # -----------------------------------------------------
-    # 8. PSI TRAIN VS TEST
-    # -----------------------------------------------------
-
+    # Usar las bandas de entrenamiento en las dos muestras hace comparables sus frecuencias.
     train_score = pd.Series(
         train_pd,
         name="predicted_pd",
@@ -462,10 +397,6 @@ def main() -> None:
         }
     )
 
-    # -----------------------------------------------------
-    # 9. GUARDAR RESULTADOS
-    # -----------------------------------------------------
-
     TEST_METRICS_PATH.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -490,10 +421,6 @@ def main() -> None:
         PSI_SUMMARY_PATH,
         index=False,
     )
-
-    # -----------------------------------------------------
-    # 10. MOSTRAR RESULTADOS
-    # -----------------------------------------------------
 
     print()
     print("FINAL PD MODEL TEST EVALUATION")

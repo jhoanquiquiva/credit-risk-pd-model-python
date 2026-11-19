@@ -7,43 +7,16 @@ import pandas as pd
 from sklearn.metrics import roc_auc_score, roc_curve
 
 
-# =========================================================
-# 1. RUTAS DEL PROYECTO
-# =========================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-TEST_DATA_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "test_data.csv"
-)
+TEST_DATA_PATH = PROJECT_ROOT / "data" / "processed" / "test_data.csv"
 
-PIPELINE_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "models"
-    / "final_pd_pipeline.joblib"
-)
+PIPELINE_PATH = PROJECT_ROOT / "outputs" / "models" / "final_pd_pipeline.joblib"
 
-DECILE_SUMMARY_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "final_test_decile_summary.csv"
-)
+DECILE_SUMMARY_PATH = PROJECT_ROOT / "outputs" / "tables" / "final_test_decile_summary.csv"
 
-FIGURES_DIR = (
-    PROJECT_ROOT
-    / "outputs"
-    / "figures"
-)
+FIGURES_DIR = PROJECT_ROOT / "outputs" / "figures"
 
-
-# =========================================================
-# 2. VARIABLES DEL MODELO FINAL
-# =========================================================
 
 FINAL_FEATURES = [
     "sex",
@@ -60,10 +33,6 @@ FINAL_FEATURES = [
     "months_no_payment_with_positive_bill",
 ]
 
-
-# =========================================================
-# 3. FUNCIÓN PRINCIPAL
-# =========================================================
 
 def main() -> None:
     """Create final model performance figures."""
@@ -114,10 +83,6 @@ def main() -> None:
         test_pd
     )
 
-    # =====================================================
-    # 4. CURVA ROC
-    # =====================================================
-
     false_positive_rate, true_positive_rate, _ = (
         roc_curve(
             y_test,
@@ -159,10 +124,6 @@ def main() -> None:
 
     plt.close()
 
-    # =====================================================
-    # 5. DEFAULT OBSERVADO POR DECIL
-    # =====================================================
-
     decile_risk_path = (
         FIGURES_DIR
         / "final_test_default_rate_by_decile.png"
@@ -192,10 +153,7 @@ def main() -> None:
 
     plt.close()
 
-    # =====================================================
-    # 6. CALIBRACIÓN POR DECILES
-    # =====================================================
-
+    # La diagonal representa coincidencia entre probabilidad media y frecuencia observada.
     calibration_path = (
         FIGURES_DIR
         / "final_test_calibration_by_decile.png"
@@ -239,10 +197,6 @@ def main() -> None:
     )
 
     plt.close()
-
-    # =====================================================
-    # 7. MOSTRAR RESULTADOS
-    # =====================================================
 
     print()
     print("FINAL MODEL FIGURES")

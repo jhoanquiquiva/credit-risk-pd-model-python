@@ -3,29 +3,15 @@
 import pandas as pd
 
 
-# ---------------------------------------------------------
-# 1. RUTAS DEL PROYECTO
-# ---------------------------------------------------------
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-RAW_DATA_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "raw"
-    / "uci_default_credit_card_clients_raw.csv"
-)
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "uci_default_credit_card_clients_raw.csv"
 
 OUTPUT_DIR = PROJECT_ROOT / "outputs" / "tables"
 
 
-# ---------------------------------------------------------
-# 2. FUNCIÓN PRINCIPAL
-# ---------------------------------------------------------
-
 def main() -> None:
 
-    # Verificar que el archivo exista
     if not RAW_DATA_PATH.exists():
         raise FileNotFoundError(
             f"No se encontró el dataset: {RAW_DATA_PATH}"
@@ -33,10 +19,8 @@ def main() -> None:
 
     OUTPUT_DIR.mkdir(parents=True, exist_ok=True)
 
-    # Cargar el CSV como DataFrame
     data = pd.read_csv(RAW_DATA_PATH)
 
-    # Verificar columnas mínimas necesarias
     required_columns = {
         "ID",
         "X1",
@@ -53,10 +37,6 @@ def main() -> None:
         raise ValueError(
             f"Faltan columnas requeridas: {sorted(missing_columns)}"
         )
-
-    # -----------------------------------------------------
-    # 3. MÉTRICAS GENERALES
-    # -----------------------------------------------------
 
     total_rows = len(data)
     total_columns = data.shape[1]
@@ -75,10 +55,6 @@ def main() -> None:
     total_missing_values = int(
         data.isna().sum().sum()
     )
-
-    # -----------------------------------------------------
-    # 4. VARIABLE OBJETIVO
-    # -----------------------------------------------------
 
     target = data["Y"]
 
@@ -103,10 +79,7 @@ def main() -> None:
         target.mean()
     )
 
-    # -----------------------------------------------------
-    # 5. VALIDACIONES CATEGÓRICAS
-    # -----------------------------------------------------
-
+    # Los códigos sin documentar se cuentan aparte para revisar su recodificación.
     invalid_sex_mask = (
         data["X2"].notna()
         & ~data["X2"].isin([1, 2])
@@ -133,10 +106,6 @@ def main() -> None:
     undocumented_marital_codes = int(
         undocumented_marital_mask.sum()
     )
-
-    # -----------------------------------------------------
-    # 6. VALIDACIONES DE RANGO
-    # -----------------------------------------------------
 
     non_positive_credit_limit = int(
         (data["X1"] <= 0).sum()
@@ -167,10 +136,6 @@ def main() -> None:
     negative_payment_rows = int(
         negative_payment_mask.sum()
     )
-
-    # -----------------------------------------------------
-    # 7. TABLAS DE SALIDA
-    # -----------------------------------------------------
 
     overview = pd.DataFrame(
         {
@@ -252,10 +217,6 @@ def main() -> None:
         * 100
     )
 
-    # -----------------------------------------------------
-    # 8. GUARDAR RESULTADOS
-    # -----------------------------------------------------
-
     overview.to_csv(
         OUTPUT_DIR / "dataset_overview.csv",
         index=False,
@@ -275,10 +236,6 @@ def main() -> None:
         OUTPUT_DIR / "target_distribution.csv",
         index=False,
     )
-
-    # -----------------------------------------------------
-    # 9. MOSTRAR RESULTADOS
-    # -----------------------------------------------------
 
     print()
     print("DATA QUALITY AUDIT")

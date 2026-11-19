@@ -5,35 +5,14 @@ import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
-# =========================================================
-# 1. RUTAS
-# =========================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-RAW_DATA_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "raw"
-    / "uci_default_credit_card_clients_raw.csv"
-)
+RAW_DATA_PATH = PROJECT_ROOT / "data" / "raw" / "uci_default_credit_card_clients_raw.csv"
 
-PROCESSED_DIR = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-)
+PROCESSED_DIR = PROJECT_ROOT / "data" / "processed"
 
-TABLES_DIR = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-)
+TABLES_DIR = PROJECT_ROOT / "outputs" / "tables"
 
-
-# =========================================================
-# 2. VARIABLES ORIGINALES
-# =========================================================
 
 RENAME_MAP = {
     "ID": "client_id",
@@ -121,10 +100,6 @@ CANDIDATE_FEATURES = [
 ]
 
 
-# =========================================================
-# 3. FUNCIÓN PRINCIPAL
-# =========================================================
-
 def main() -> None:
     """Create reproducible modeling, train, validation and test datasets."""
 
@@ -153,10 +128,7 @@ def main() -> None:
             f"{sorted(missing_original_columns)}"
         )
 
-    # -----------------------------------------------------
-    # 4. RENOMBRAMIENTO Y RECODIFICACIÓN
-    # -----------------------------------------------------
-
+    # Conservar los códigos originales permite comprobar qué categorías se agruparon.
     model_data = data.rename(
         columns=RENAME_MAP
     ).copy()
@@ -180,10 +152,6 @@ def main() -> None:
             }
         )
     )
-
-    # -----------------------------------------------------
-    # 5. VARIABLES DE ATRASO
-    # -----------------------------------------------------
 
     delay_flags = (
         model_data[REPAYMENT_COLUMNS] > 0
@@ -214,10 +182,6 @@ def main() -> None:
         .max(axis=1)
     )
 
-    # -----------------------------------------------------
-    # 6. VARIABLES FINANCIERAS
-    # -----------------------------------------------------
-
     model_data["avg_bill_amount"] = (
         model_data[BILL_COLUMNS]
         .mean(axis=1)
@@ -233,10 +197,7 @@ def main() -> None:
         / model_data["credit_limit"]
     )
 
-    # -----------------------------------------------------
-    # 7. FACTURA POSITIVA SIN PAGO
-    # -----------------------------------------------------
-
+    # Contar un mes sin pago solo cuando hubo una factura positiva.
     no_payment_flags = pd.DataFrame(
         {
             f"m{month}": (
@@ -260,10 +221,7 @@ def main() -> None:
         "months_no_payment_with_positive_bill"
     ] = no_payment_flags.sum(axis=1)
 
-    # -----------------------------------------------------
-    # 8. CREAR LOS ÍNDICES DE LAS MUESTRAS
-    # -----------------------------------------------------
-
+    # Dividir antes de estimar el límite de utilización evita usar información de prueba.
     development_index, test_index = train_test_split(
         model_data.index,
         test_size=0.20,
@@ -280,11 +238,6 @@ def main() -> None:
         ],
         random_state=42,
     )
-
-    # -----------------------------------------------------
-    # 9. TRATAMIENTO DE UTILIZACIÓN
-    #    El percentil se aprende solo con entrenamiento.
-    # -----------------------------------------------------
 
     utilization_cap = float(
         model_data.loc[
@@ -316,10 +269,6 @@ def main() -> None:
         )
     )
 
-    # -----------------------------------------------------
-    # 10. DATASET FINAL
-    # -----------------------------------------------------
-
     modeling_dataset = model_data[
         ["client_id", "default"]
         + CANDIDATE_FEATURES
@@ -342,10 +291,6 @@ def main() -> None:
         .loc[test_index]
         .copy()
     )
-
-    # -----------------------------------------------------
-    # 11. VALIDACIONES
-    # -----------------------------------------------------
 
     total_rows = len(modeling_dataset)
     distinct_clients = (
@@ -391,10 +336,6 @@ def main() -> None:
         raise ValueError(
             "Las muestras no contienen el total de clientes."
         )
-
-    # -----------------------------------------------------
-    # 12. RESÚMENES
-    # -----------------------------------------------------
 
     validation_summary = pd.DataFrame(
         {
@@ -450,10 +391,6 @@ def main() -> None:
         split_summary["default_rate"] * 100
     )
 
-    # -----------------------------------------------------
-    # 13. GUARDAR
-    # -----------------------------------------------------
-
     PROCESSED_DIR.mkdir(
         parents=True,
         exist_ok=True,
@@ -495,10 +432,6 @@ def main() -> None:
         / "sample_split_summary.csv",
         index=False,
     )
-
-    # -----------------------------------------------------
-    # 14. MOSTRAR RESULTADOS
-    # -----------------------------------------------------
 
     print()
     print("MODELING DATASET PREPARATION")

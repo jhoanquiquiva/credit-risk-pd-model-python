@@ -11,51 +11,18 @@ from sklearn.pipeline import Pipeline
 from sklearn.preprocessing import OneHotEncoder, StandardScaler
 
 
-# =========================================================
-# 1. RUTAS DEL PROYECTO
-# =========================================================
-
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
-TRAIN_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "train_data.csv"
-)
+TRAIN_PATH = PROJECT_ROOT / "data" / "processed" / "train_data.csv"
 
-VALIDATION_PATH = (
-    PROJECT_ROOT
-    / "data"
-    / "processed"
-    / "validation_data.csv"
-)
+VALIDATION_PATH = PROJECT_ROOT / "data" / "processed" / "validation_data.csv"
 
-MODEL_OUTPUT_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "models"
-    / "final_pd_pipeline.joblib"
-)
+MODEL_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "models" / "final_pd_pipeline.joblib"
 
-METRICS_OUTPUT_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "final_model_validation_metrics.csv"
-)
+METRICS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "tables" / "final_model_validation_metrics.csv"
 
-COEFFICIENTS_OUTPUT_PATH = (
-    PROJECT_ROOT
-    / "outputs"
-    / "tables"
-    / "final_model_coefficients.csv"
-)
+COEFFICIENTS_OUTPUT_PATH = PROJECT_ROOT / "outputs" / "tables" / "final_model_coefficients.csv"
 
-
-# =========================================================
-# 2. VARIABLES DEL MODELO PARSIMONIOSO
-# =========================================================
 
 CATEGORICAL_FEATURES = [
     "sex",
@@ -84,10 +51,6 @@ FINAL_FEATURES = (
     + NUMERIC_FEATURES
 )
 
-
-# =========================================================
-# 3. FUNCIÓN PRINCIPAL
-# =========================================================
 
 def main() -> None:
     """Train and save the final parsimonious PD model."""
@@ -121,10 +84,6 @@ def main() -> None:
     X_validation = validation_data[FINAL_FEATURES].copy()
     y_validation = validation_data["default"].copy()
 
-    # -----------------------------------------------------
-    # 4. PREPROCESAMIENTO
-    # -----------------------------------------------------
-
     preprocessor = ColumnTransformer(
         transformers=[
             (
@@ -148,10 +107,6 @@ def main() -> None:
         ]
     )
 
-    # -----------------------------------------------------
-    # 5. PIPELINE COMPLETO
-    # -----------------------------------------------------
-
     final_pipeline = Pipeline(
         steps=[
             (
@@ -172,10 +127,6 @@ def main() -> None:
         X_train,
         y_train,
     )
-
-    # -----------------------------------------------------
-    # 6. VALIDACIÓN DEL MODELO GUARDADO
-    # -----------------------------------------------------
 
     validation_pd = final_pipeline.predict_proba(
         X_validation
@@ -253,10 +204,7 @@ def main() -> None:
         }
     )
 
-    # -----------------------------------------------------
-    # 7. COEFICIENTES DEL MODELO
-    # -----------------------------------------------------
-
+    # La codificación de categorías cambia los nombres y el número de coeficientes.
     fitted_preprocessor = (
         final_pipeline.named_steps["preprocessor"]
     )
@@ -285,10 +233,6 @@ def main() -> None:
         ascending=False,
     )
 
-    # -----------------------------------------------------
-    # 8. GUARDAR ARTEFACTOS
-    # -----------------------------------------------------
-
     MODEL_OUTPUT_PATH.parent.mkdir(
         parents=True,
         exist_ok=True,
@@ -313,10 +257,6 @@ def main() -> None:
         COEFFICIENTS_OUTPUT_PATH,
         index=False,
     )
-
-    # -----------------------------------------------------
-    # 9. MOSTRAR RESULTADOS
-    # -----------------------------------------------------
 
     print()
     print("FINAL PD MODEL TRAINING")
